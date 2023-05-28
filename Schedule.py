@@ -114,7 +114,7 @@ class Schedule:
         self.start_constraint_field=start_constraint_field
        
         
-        os.makedirs(str(tree.id),exist_ok=True)
+        os.makedirs("/reports/"+str(tree.id),exist_ok=True)
     def Generate(self):
          
         head=self.tree.get()
@@ -126,14 +126,16 @@ class Schedule:
         self.GenerateTaskHeader(head)
         self.GenerateReportHeader()
         
-        self.tjp_file = open(str(self.id)+"/project.tjp", "w")
+        self.tjp_file = open("/reports/"+str(self.id)+"/project.tjp", "w")
         
         for line in self.tjp:
             self.tjp_file.write(line) 
             self.tjp_file.write("\n") 
         self.tjp_file.close()
-       
-        os.system(f'tj3 {str(self.id)}"/project.tjp" -o {str(self.id)}')
+        
+        cmd=f'tj3 /reports/{str(self.id)}/project.tjp -o /reports/{str(self.id)}'
+        print(cmd)
+        os.system(cmd)
         #subprocess.call(["tj3", "project.tjp", "-o" ,"output"])
         
     def GenerateProjectHeader(self,head):
