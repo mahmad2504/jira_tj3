@@ -29,7 +29,38 @@ class Jira:
             }
         self.fields=fields
     
-    
+    def Worklogs(self,issueIdOrKey):
+        
+        startAt=0
+        maxResults=500
+        url = self.url+f"/rest/api/latest/issue/{issueIdOrKey}/worklog?startAt=100"
+        #print(url)
+        worklogs=[]
+        while(1):
+            response = requests.request(
+                "GET",
+                url,
+                headers=self.headers,
+                params={
+                    "issueIdOrKey" : issueIdOrKey,
+                    "startAt": startAt,
+                    "maxResults": maxResults,
+                },
+                auth=self.auth,
+                verify=False,
+                
+            )
+            
+            startAt=startAt+maxResults;
+            data=json.loads(response.text)
+            #print(data)
+            for d in data["worklogs"]:
+                worklogs.append(d)
+                
+            if len(worklogs)==data['total']:
+                break
+        return worklogs
+        
                     
     def Search(self,jql,fields=None):
 

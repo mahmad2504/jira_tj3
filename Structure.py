@@ -20,6 +20,7 @@ class Structure:
             url = self.jira.url+"/rest/structure/2.0/structure?id="+str(name)
         else:
             url = self.jira.url+"/rest/structure/2.0/structure?name="+str(name)
+        #print(url)
         response = requests.request(
             "GET",
             url,
@@ -101,7 +102,9 @@ class Structure:
             row.itemdesc=data['description']
             row.id=issue['key']
             row.data=data
-         
+            
+           
+            
             #tree[issue["id"]].data=issue['fields']
             #tree[issue["id"]].data["key"]=issue['key']
             #tree[issue["id"]].data["id"]=issue['id']

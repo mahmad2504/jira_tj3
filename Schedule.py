@@ -5,6 +5,8 @@ import os
 import json
 from lxml import etree
 import lxml.html
+import csv
+
 
 class Schedule:
     tjp = [] 
@@ -27,16 +29,8 @@ class Schedule:
     }
     allissues={}
     def ProcessIssue(self,issue):
-    
-        s = """<table>
-  <tr><th>Event</th><th>Start Date</th><th>End Date</th></tr>
-  <tr><td>a</td><td>b</td><td>c</td></tr>
-  <tr><td>d</td><td>e</td><td>f</td></tr>
-  <tr><td>g</td><td>h</td><td>i</td></tr>
-</table>
-"""     
         issue.tables={}
-        if issue.itemdesc!= None:
+        if  issue.itemtype== 'com.almworks.jira.structure:type-memo' and issue.itemdesc!= None:
             #print(issue.itemdesc)
             #print(etree.HTML(issue.itemdesc))
             if etree.HTML(issue.itemdesc) != None:
@@ -48,7 +42,6 @@ class Schedule:
                     rows=table.findall('.//tr')
                     header=0
                     hdr=[]
-                    print("Gggg")
                     for row in rows:
                         headers=row.findall('.//th')
                         
@@ -63,12 +56,25 @@ class Schedule:
                             
                         if(len(values)>0):
                             itable.append(values) 
-                    print("fff",len(hdr))
+                    #print("fff",len(hdr))
                     if len(hdr) > 0 and len(itable)>1: 
                         issue.tables[hdr[0].lower()]=itable
                         
                         #issue.tables.append(itable)
-                        
+            if "key" in issue.tables:
+                for keyvalue in issue.tables["key"]:
+                    setattr(issue, keyvalue[0], keyvalue[1])
+            
+            if(issue.itemname.lower() == 'project'):
+                #print(issue.tables)
+                if hasattr(issue, 'project_start') and not hasattr(self, 'project_start'):
+                    self.project_start=issue.project_start
+                    #print(self.project_start)
+                if hasattr(issue, 'project_end') and not hasattr(self, 'project_end'):
+                    self.project_end=issue.project_end
+                    
+            #print(issue.itemtype)
+            #print(issue.itemname)            
                 
                   
                 #print(len(tables))
@@ -81,23 +87,23 @@ class Schedule:
                 #result = etree.tostring(root, pretty_print=True, method="html")
                 #print(result)
         #print(json.loads(issue.data["description"]))
-        print(issue.tables)
-        if "key" in issue.tables:
-            for keyvalue in issue.tables["key"]:
-                setattr(issue, keyvalue[0], keyvalue[1])
+        #print(issue.tables)
+        
+        
                 #print(keyvalue[0])
                 #print(keyvalue[1])
                 #issue[keyvalue[0]] = keyvalue[1]
                 #print(row)
                 
-        if "key" in issue.tables:
-            print(issue.project_start)
-            print(issue.project_end)
+        #if "key" in issue.tables:
+        #    print(issue.itemdesc)
+        #    print("-->",issue.project_start)
+        #    print(issue.project_end)
+        #    print(issue.myvar)
         
         if(issue.data != None):
             if(issue.data["assignee"] == None):
                 issue.data["assignee"]=self.resources['unknown']
-                
             self.resources[issue.data["assignee"]["name"]]=issue.data["assignee"]
         issue.parent=None
         issue.isparent=False
@@ -106,6 +112,7 @@ class Schedule:
             self.ProcessIssue(sissue)
             sissue.parent=issue
         
+        #print(issue.id,issue.itemname)
         self.allissues[issue.id]=issue
             
     def __init__(self,tree,start_constraint_field):
@@ -114,33 +121,95 @@ class Schedule:
         self.start_constraint_field=start_constraint_field
        
         
-        os.makedirs("/reports/"+str(tree.id),exist_ok=True)
+        os.makedirs("/projects/"+str(tree.id),exist_ok=True)
     def Generate(self):
          
         head=self.tree.get()
-        self.GenerateProjectHeader(head)
-        
         self.ProcessIssue(head)
+        self.GenerateProjectHeader(head)
         self.GenerateResourceHeader(self.resources)
         
         self.GenerateTaskHeader(head)
         self.GenerateReportHeader()
         
-        self.tjp_file = open("/reports/"+str(self.id)+"/project.tjp", "w")
+        self.tjp_file = open("/projects/"+str(self.id)+"/project.tjp", "w")
         
         for line in self.tjp:
             self.tjp_file.write(line) 
             self.tjp_file.write("\n") 
         self.tjp_file.close()
         
-        cmd=f'tj3 /reports/{str(self.id)}/project.tjp -o /reports/{str(self.id)}'
+        cmd=f'tj3 /projects/{str(self.id)}/project.tjp -o /projects/{str(self.id)}'
         print(cmd)
         os.system(cmd)
-        #subprocess.call(["tj3", "project.tjp", "-o" ,"output"])
         
+        tasks=[]
+        with open(f'/projects/{str(self.id)}/monthreport.csv', newline='') as csvfile:
+            csvreader = csv.reader(csvfile, delimiter=';', quotechar='|')
+            
+            header = []
+            header = next(csvreader)
+            
+            for row in csvreader:
+                i=0
+                o={'table':{}}
+                for field in row:
+                    label=header[i].replace('"','').strip()
+                    value=row[i].replace('"','').strip()
+                    if(label=='Id'):
+                        issue=self.allissues[value]
+                        setattr(issue,'schedule',{})
+                        
+                    try:
+                        value=datetime.strptime(value, '%Y-%m-%d')
+                    except:
+                        pass
+                        
+                    try:
+                        
+                        label=datetime.strptime(label, '%Y-%m-%d')
+                        label=label.strftime("%Y-%m")
+                        if(value!=''):
+                            issue.schedule[label]=float(value)
+                        else:
+                            issue.schedule[label]=0
+                    except:
+                        
+                        setattr(issue,label.lower(),value)
+                        
+                        pass
+                  
+                    i=i+1
+                    tasks.append(o)
+            csvfile.close()
+        d=[]
+        for id in self.allissues:
+            issue=self.allissues[id]
+            for date in issue.schedule:
+                item=issue.schedule[date]
+              
     def GenerateProjectHeader(self,head):
+        #print(head.itemdesc)
         
-        self.tjp.append(f'project your_project_id "{head.itemname}" 2023-05-01 +8m {{')
+        
+        if( hasattr(self,'project_start')):
+            project_start=self.project_start
+        else:
+            print("Project Start Not defined")
+            exit()
+        if( hasattr(self,'project_end')):
+            project_end=self.project_end
+        else:
+            print("Project Start Not defined")
+            exit()
+        #print(project_start,project_end)
+        #project_duration = (datetime.strptime(project_end, '%Y-%m-%d') - datetime.strptime(project_start, '%Y-%m-%d')).total_seconds() / (60*60*24)
+        project_duration=600
+        print(f'Duration is {project_duration} days')
+        #project_start=self.project_start
+        self.tjp.append(f'project your_project_id "{head.itemname}" {project_start} +{project_duration}d {{')
+        #self.tjp.append(f'now 2023-06-21 00:00')
+       
         self.tjp.append(f'timezone "America/Chicago"')
         self.tjp.append(f'timeformat "%Y-%m-%d"')
         self.tjp.append(f'numberformat "-" "" "," "." 1')
@@ -149,6 +218,9 @@ class Schedule:
         self.tjp.append(f'scenario plan "Plan" {{}}')
         self.tjp.append(f'extend task {{ text Jira "Jira"')
         self.tjp.append(f'              text Status "Status"')
+        self.tjp.append(f'              text Id "Id"')
+        self.tjp.append(f'              text Isparent "Isparent"')
+        
         self.tjp.append(f'}}}}')
         
         self.tjp.append(" ")
@@ -170,27 +242,8 @@ class Schedule:
         self.tjp.append(f'}}')
         
         return self.tjp
-        
-    def GenerateReportHeader(self):
-        
-        self.tjp.append(f'taskreport monthreporthtml "monthreporthtml" {{')
-        self.tjp.append(f'formats html')
-        self.tjp.append(f'columns bsi, name, start, end, effort,resources, complete,Jira, Status, priority, monthly')
-        self.tjp.append(f'timeformat "%a %Y-%m-%d"')
-        self.tjp.append(f'loadunit hours')
-        self.tjp.append(f'hideresource @all }}')
-        
-        
-        self.tjp.append(f'resourcereport resourcegraphhtm "resourcehtml" {{')
-        self.tjp.append(f'formats html')
-        self.tjp.append(f'headline "Resource Allocation Graph"')
-        self.tjp.append(f'columns no, name, effort, weekly')
-        self.tjp.append(f'loadunit shortauto')
-        self.tjp.append(f'hidetask ~(isleaf() & isleaf_())')
-        self.tjp.append(f'sorttasks plan.start.up}}')
-     
-         
-        return self.tjp
+    
+   
     
     def GetDependsOn(self,issue):
         
@@ -250,7 +303,7 @@ class Schedule:
       
         for x in range(int(issue.level)):
             spaces=spaces+"    "
-            
+       
         summary=issue.itemname
         key=issue.id    
         if issue.data != None:
@@ -259,12 +312,16 @@ class Schedule:
         
         
         nkey=key.replace("-","_")
-        print(isinstance(nkey, int))
+        #print(isinstance(nkey, int))
         
         nsummary=summary.replace("$","_")
         nsummary=nsummary.replace('"',"_")
         if issue.data == None:   
+            isparent=issue.isparent
+            id=issue.id
             self.tjp.append(f'{spaces}task {nkey} "{summary}" {{')
+            self.tjp.append(f'{spaces}    Id "{id}"')
+            self.tjp.append(f'{spaces}    Isparent "{isparent}"')
         else:
             dependency_tag=self.GetDependencyTag(issue.data)
             estimate=0
@@ -292,11 +349,15 @@ class Schedule:
             #summary=issue.data["summary"]
             status=issue.data["status"]["name"]
             statuscategory=issue.data["status"]["statusCategory"]["name"]
+            isparent=issue.isparent
+            id=issue.id
             
             #print(nkey,estimate,timespent,status,statuscategory,estimate,remainingestimate,timespent)
             self.tjp.append(f'{spaces}task {nkey} "{nsummary}" {{')
             self.tjp.append(f'{spaces}    Jira "{key}"')
             self.tjp.append(f'{spaces}    Status "{status}"')
+            self.tjp.append(f'{spaces}    Id "{id}"')
+            self.tjp.append(f'{spaces}    Isparent "{isparent}"')
             if(issue.isparent==False):
                 
                 if statuscategory=='In Progress':
@@ -327,4 +388,31 @@ class Schedule:
         for sissue in issue.children:
             self.GenerateTaskHeader(sissue)
         self.tjp.append(f'{spaces}}}')
+        
+    def GenerateReportHeader(self):
+        
+        self.tjp.append(f'taskreport monthreporthtml "monthreporthtml" {{')
+        self.tjp.append(f'formats html')
+        self.tjp.append(f'columns bsi, name, start, end, effort,resources, complete,Jira, Status, priority,monthly')
+        self.tjp.append(f'timeformat "%a %Y-%m-%d"')
+        self.tjp.append(f'loadunit hours')
+        self.tjp.append(f'hideresource @all }}')
+        
+        self.tjp.append(f'taskreport monthreport "monthreport" {{')
+        self.tjp.append(f'formats csv')
+        self.tjp.append(f'columns Id, bsi, name, start, end, effort,resources, complete,Jira, Status, Isparent, priority, Isparent,monthly')
+        self.tjp.append(f'timeformat "%Y-%m-%d"')
+        self.tjp.append(f'loadunit hours')
+        self.tjp.append(f'hideresource @all }}')
        
+        
+        self.tjp.append(f'resourcereport resourcegraphhtm "resourcehtml" {{')
+        self.tjp.append(f'formats html')
+        self.tjp.append(f'headline "Resource Allocation Graph"')
+        self.tjp.append(f'columns no, name, effort, weekly')
+        self.tjp.append(f'loadunit shortauto')
+        self.tjp.append(f'hidetask ~(isleaf() & isleaf_())')
+        self.tjp.append(f'sorttasks plan.start.up}}')
+     
+         
+        return self.tjp

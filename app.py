@@ -27,7 +27,7 @@ arg_desc = '''\
         
 parser = argparse.ArgumentParser(formatter_class = argparse.RawDescriptionHelpFormatter,description= arg_desc)
 parser.add_argument('target',   help='build, release, generate, info, version')
-parser.add_argument('--structure',   help='sprint name required for generate command')
+parser.add_argument('--structure',   help='structure name required for generate command')
 parser.add_argument('--verbose',   action='store_true', help='')
 parser.add_argument('--dev',   action='store_true', help='')
 
@@ -51,8 +51,7 @@ code_repository=p["code_repository"]
 docker_registry=p["docker_registry"]
 image_name=p["image_name"]
 
-match args.target:
-    case 'build':
+if args.target=='build':
         if source_code==0:
             mprint("Source code not available. Unable to run this command",1)
             sys.exit()
@@ -75,7 +74,7 @@ match args.target:
         cmd=f'docker   build . --build-arg COMMIT={commit} --build-arg BRANCH={branch}  --build-arg CODE_REPOSITORY={code_repository} -t {image_name}'
         mprint(cmd)
         os.system(cmd)
-    case 'release':
+if args.target=='release':
         if source_code==0:
             mprint("Source code not available. Unable to run this command",1)
             sys.exit()
@@ -105,16 +104,16 @@ match args.target:
         cmd=f'docker push {docker_registry}/{image_name}:latest'
         os.system(cmd)
         
-        cmd=f'python -m PyInstaller app.py --onefile --name sprint_report'
-        mprint(cmd)
-        os.system(cmd)
+        #cmd=f'python -m PyInstaller app.py --onefile --name jira_tj3'
+        #mprint(cmd)
+        #os.system(cmd)
         
         p["commit"]=commit
         p["branch"]=branch
         with open('parameters.json', 'w') as f:
             json.dump(p, f)
            
-    case 'version':
+if args.target=='version':
         if args.dev:
             if source_code==0:
                 mprint("Source code not available. Unable to run this command",1)
@@ -135,7 +134,7 @@ match args.target:
         branch=branch.replace("\n","")
         print(f'Branch:{branch}')
             
-    case 'generate':
+if args.target=='generate':
         if args.structure:
             if args.dev:
                 if source_code==0:
@@ -151,7 +150,7 @@ match args.target:
                 os.system(cmd)
         else:
             mprint("structure name is missing ",1)
-    case 'terminal':
+if args.target=='terminal':
         if args.dev:
             if source_code==0:
                 mprint("Source code not available. Unable to run this command",1)

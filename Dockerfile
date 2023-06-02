@@ -12,6 +12,9 @@ RUN apk add --no-cache python3 py3-pip
 RUN pip3 install --upgrade pip
 RUN pip install termcolor
 RUN pip install lxml
+RUN pip install python-dateutil
+RUN pip install pyinstaller
+RUN pip install openpyxl
 
 RUN apk add --no-cache ruby 
 RUN gem install taskjuggler --version 3.7.2 --no-document --clear-sources
