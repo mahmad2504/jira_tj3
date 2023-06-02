@@ -141,11 +141,11 @@ if args.target=='generate':
                     mprint("Source code not available. Unable to run this command",1)
                     sys.exit()
                 else:
-                    cmd=f'docker run -it --rm -w /app -v {os.getcwd()}:/app -v {os.getcwd()}/reports:/reports {image_name}:latest  python3 main.py "{args.structure}"'
+                    cmd=f'docker run -it --rm -w /app -v {os.getcwd()}:/app -v {os.getcwd()}/projects:/projects {image_name}:latest  python3 main.py "{args.structure}"'
                     mprint(cmd)
                     os.system(cmd)
             else:
-                cmd=f'docker run -it --rm -w /src  -v {os.getcwd()}/reports:/reports {docker_registry}/{image_name}:latest python3 main.py "{args.structure}"'
+                cmd=f'docker run -it --rm -w /src  -v {os.getcwd()}/projects:/projects {docker_registry}/{image_name}:latest python3 main.py "{args.structure}"'
                 mprint(cmd)
                 os.system(cmd)
         else:
@@ -156,9 +156,9 @@ if args.target=='terminal':
                 mprint("Source code not available. Unable to run this command",1)
                 sys.exit()
             else:
-                cmd=f'docker run -it --rm -w /app -v {os.getcwd()}:/app -v {os.getcwd()}/reports:/reports {image_name}:latest sh'
+                cmd=f'docker run -it --rm -w /app -v {os.getcwd()}:/app -v {os.getcwd()}/projects:/projects {image_name}:latest sh'
         else:
-            cmd=f'docker run -it --rm -w /src  -v {os.getcwd()}/reports:/reports {docker_registry}/{image_name}:latest sh'
+            cmd=f'docker run -it --rm -w /src  -v {os.getcwd()}/projects:/projects {docker_registry}/{image_name}:latest sh'
         mprint(cmd)
         os.system(cmd)
        
