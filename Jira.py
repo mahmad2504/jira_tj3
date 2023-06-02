@@ -4,6 +4,8 @@ import requests
 import urllib3
 import json
 import os
+import base64
+
 class Jira:
     def __init__(self,fields=["summary"],jiraurl=None,jirauser=None,jiratoken=None):
         os.system('color >/dev/null 2>&1')
@@ -15,20 +17,31 @@ class Jira:
                 data = f.read()
                 settings = json.loads(data)
                 self.url = settings["jiraurl"]
-                self.jirauser = settings["jirauser"]
-                self.jiratoken = settings["jiratoken"]
+                self.jirauser =  self.Decode(settings["jirauser"])
+                self.jiratoken = self.Decode(settings["jiratoken"])
                 f.close()
         else:
             self.url = jiraurl
-            self.jirauser = jirauser
-            self.jiratoken = jiratoken
+            self.jirauser = self.Decode(jirauser)
+            self.jiratoken = self.Decode(jiratoken)
         self.auth = HTTPBasicAuth(self.jirauser, self.jiratoken)
         self.headers = {
               "Accept": "application/json",
               "Content-Type": "application/json",
             }
         self.fields=fields
-    
+    def Decode(self,base64_message):
+        base64_bytes = base64_message.encode('ascii')
+        message_bytes = base64.b64decode(base64_bytes)
+        message = message_bytes.decode('ascii')
+        return message
+                
+    def Encode(self,message):
+       
+        message_bytes = message.encode('ascii')
+        base64_bytes = base64.b64encode(message_bytes)
+        base64_message = base64_bytes.decode('ascii')
+        return base64_message
     def Worklogs(self,issueIdOrKey):
         
         startAt=0

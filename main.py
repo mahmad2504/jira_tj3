@@ -24,7 +24,8 @@ if len(sys.argv)!=2:
 #project_id=12397
 
 structure_name=sys.argv[1]
-j=Jira(fields=["summary","assignee","status","timespent","timetracking","issuelinks","description","updated",start_constraint_field])
+
+j=Jira(fields=["summary","assignee","status","timespent","timetracking","issuelinks","description","updated",start_constraint_field],jiraurl="https://jira.alm.mentorg.com",jirauser="aGltcA==",jiratoken="aG1pcA==")
 s=Structure(j)
 
 s.Get(structure_name)
