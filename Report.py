@@ -66,6 +66,6 @@ class Report:
         for field in header:
             sheet.cell(1,j).value=field
             j=j+1 
-        print(f'projects/{str(tree.id)}/report.xlsx')
-        wb.save(f'projects/{str(tree.id)}/report.xlsx') 
+        
+        wb.save(f'/projects/{str(tree.id)}/report.xlsx') 
         print("Report generated")

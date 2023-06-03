@@ -8,7 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-projects/
+projects
 build/
 develop-eggs/
 dist/
