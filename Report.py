@@ -67,3 +67,4 @@ class Report:
             sheet.cell(1,j).value=field
             j=j+1 
         wb.save(f'projects/{str(tree.id)}/report.xlsx') 
+        print("Report generated")
