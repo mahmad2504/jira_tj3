@@ -1,0 +1,330 @@
+project your_project_id "Renesas RZ/A1H StarterKit BSP" 2023-08-01 +600d {
+timezone "America/Chicago"
+timeformat "%Y-%m-%d"
+numberformat "-" "" "," "." 1
+currencyformat "(" ")" "," "." 0
+currency "USD"
+scenario plan "Plan" {}
+extend task { text Jira "Jira"
+              text Status "Status"
+              text Id "Id"
+              text Isparent "Isparent"
+}}
+ 
+resource all "Developers" {
+resource unknown "unknown_PK" {
+ limits { weeklymax  40h} }
+resource mirfan "mirfan_PK" {
+ limits { weeklymax  40h} }
+resource ijaved "ijaved_EU" {
+ limits { weeklymax  40h} }
+resource fabbas "fabbas_PK" {
+ limits { weeklymax  40h} }
+resource rasheed "rasheed_US" {
+ limits { weeklymax  40h} }
+resource mkhalid "mkhalid_PK" {
+ limits { weeklymax  40h} }
+ 
+}
+task root "Renesas RZ/A1H StarterKit BSP" {
+    Id "root"
+    Isparent "True"
+    task PSP_9330 "RZ/A1H Starter Kit BSP for Renmark Pacific" {
+        Jira "PSP-9330"
+        Status "Open"
+        Id "PSP-9330"
+        Isparent "True"
+        task PSP_9332 "M.0" {
+            Jira "PSP-9332"
+            Status "Closed"
+            Id "PSP-9332"
+            Isparent "False"
+            complete 100
+            priority 0
+        }
+        task PSP_9340 "M.1" {
+            Jira "PSP-9340"
+            Status "Closed"
+            Id "PSP-9340"
+            Isparent "False"
+            complete 100
+            priority 0
+        }
+        task PSP_9333 "M.2" {
+            Jira "PSP-9333"
+            Status "Open"
+            Id "PSP-9333"
+            Isparent "True"
+            task PSP_9265 "Enable and Test Execute in Place for Serial Flash (QSPI)" {
+                Jira "PSP-9265"
+                Status "Closed"
+                Id "PSP-9265"
+                Isparent "False"
+                complete 100
+                priority 0
+            }
+            task PSP_9266 "Port Nucleus Bootloader to run from QSPI flash" {
+                Jira "PSP-9266"
+                Status "Closed"
+                Id "PSP-9266"
+                Isparent "False"
+                complete 100
+                priority 0
+            }
+            task PSP_9293 "Ethernet driver for Renesas RZ/A1H" {
+                Jira "PSP-9293"
+                Status "Closed"
+                Id "PSP-9293"
+                Isparent "False"
+                complete 100
+                priority 0
+            }
+            task PSP_9295 "RZ/A1H BSP Porting" {
+                Jira "PSP-9295"
+                Status "Open"
+                Id "PSP-9295"
+                Isparent "True"
+                task PSP_9296 "Board bring-up and hardware/software environment setup" {
+                    Jira "PSP-9296"
+                    Status "Resolved"
+                    Id "PSP-9296"
+                    Isparent "False"
+                    complete 100
+                    priority 0
+                }
+                task PSP_9297 "Kernel porting" {
+                    Jira "PSP-9297"
+                    Status "Resolved"
+                    Id "PSP-9297"
+                    Isparent "False"
+                    complete 100
+                    priority 0
+                }
+                task PSP_9298 "CPU driver and board initialization" {
+                    Jira "PSP-9298"
+                    Status "Resolved"
+                    Id "PSP-9298"
+                    Isparent "False"
+                    complete 100
+                    priority 0
+                }
+                task PSP_9299 "serial driver" {
+                    Jira "PSP-9299"
+                    Status "Resolved"
+                    Id "PSP-9299"
+                    Isparent "False"
+                    complete 100
+                    priority 0
+                }
+                task PSP_9314 "I2C driver" {
+                    Jira "PSP-9314"
+                    Status "Resolved"
+                    Id "PSP-9314"
+                    Isparent "False"
+                    complete 100
+                    priority 0
+                }
+                task PSP_9315 "LWSPI driver (Renesas SPI)" {
+                    Jira "PSP-9315"
+                    Status "Resolved"
+                    Id "PSP-9315"
+                    Isparent "False"
+                    complete 100
+                    priority 0
+                }
+                task PSP_9316 "Serial Flash driver" {
+                    Jira "PSP-9316"
+                    Status "Resolved"
+                    Id "PSP-9316"
+                    Isparent "False"
+                    complete 100
+                    priority 0
+                }
+                task PSP_9317 "USB Host driver" {
+                    Jira "PSP-9317"
+                    Status "Resolved"
+                    Id "PSP-9317"
+                    Isparent "False"
+                    complete 100
+                    priority 0
+                }
+                task PSP_9318 "CAN driver" {
+                    Jira "PSP-9318"
+                    Status "Resolved"
+                    Id "PSP-9318"
+                    Isparent "False"
+                    complete 100
+                    priority 0
+                }
+                task PSP_9538 "Ethernet Driver" {
+                    Jira "PSP-9538"
+                    Status "Resolved"
+                    Id "PSP-9538"
+                    Isparent "False"
+                    complete 100
+                    priority 0
+                }
+                task PSP_9498 "Documentation of BSP and Nucleus BootLoader" {
+                    Jira "PSP-9498"
+                    Status "Resolved"
+                    Id "PSP-9498"
+                    Isparent "False"
+                    complete 100
+                    priority 0
+                }
+            }
+            task PSP_9294 "Engineering Testing and bug fixing Part-1 - RZ/A1H StarterKit" {
+                Jira "PSP-9294"
+                Status "Resolved"
+                Id "PSP-9294"
+                Isparent "False"
+                complete 100
+                priority 0
+                depends root.PSP_9330.PSP_9333.PSP_9293
+            }
+            task PSP_9319 "Engineering Testing and bug fixing - Part 2" {
+                Jira "PSP-9319"
+                Status "Closed"
+                Id "PSP-9319"
+                Isparent "False"
+                complete 100
+                priority 0
+                depends root.PSP_9330.PSP_9333.PSP_9293
+            }
+        }
+        task PSP_9334 "M.3" {
+            Jira "PSP-9334"
+            Status "Open"
+            Id "PSP-9334"
+            Isparent "True"
+            task BSPQA_2916 "Acceptance Testing of  Renesas RZ/A1H Starter Ki BSP for Nucleus ReadyStart for ARM 2017.02.2" {
+                Jira "BSPQA-2916"
+                Status "Closed"
+                Id "BSPQA-2916"
+                Isparent "False"
+                complete 100
+                priority 0
+            }
+            task BSPQA_2917 "Test Cycle 1 for IV&V of Renesas RZ/A1H Starter Kit" {
+                Jira "BSPQA-2917"
+                Status "Closed"
+                Id "BSPQA-2917"
+                Isparent "False"
+                complete 100
+                priority 0
+            }
+            task PSP_9337 "Bug Fixing for QA Cycle #1" {
+                Jira "PSP-9337"
+                Status "Resolved"
+                Id "PSP-9337"
+                Isparent "False"
+                complete 100
+                priority 0
+                depends root.PSP_9330.PSP_9334.BSPQA_2917
+            }
+            task BSPQA_2918 "Test Cycle 2 for IV&V of Renesas RZ/A1H Starter Kit" {
+                Jira "BSPQA-2918"
+                Status "Closed"
+                Id "BSPQA-2918"
+                Isparent "False"
+                complete 100
+                priority 0
+                depends root.PSP_9330.PSP_9334.PSP_9337
+            }
+        }
+        task PSP_9629 "M.4" {
+            Jira "PSP-9629"
+            Status "Open"
+            Id "PSP-9629"
+            Isparent "True"
+            task PSP_9630 "Add WXFS partition to NOR device to enable XIP processes" {
+                Jira "PSP-9630"
+                Status "Resolved"
+                Id "PSP-9630"
+                Isparent "False"
+                complete 100
+                priority 0
+            }
+            task PSP_9631 "Test XIP processes with WXFS" {
+                Jira "PSP-9631"
+                Status "Resolved"
+                Id "PSP-9631"
+                Isparent "False"
+                complete 100
+                priority 0
+            }
+            task OS_9605 "XIP process not working with Nucleus Processes Windows using Codebench" {
+                Jira "OS-9605"
+                Status "Open"
+                Id "OS-9605"
+                Isparent "False"
+                priority 800
+                effort 60min
+                complete 0
+                allocate rasheed
+            }
+        }
+    }
+    task PSP_9338 "QA Cycle #2" {
+        Jira "PSP-9338"
+        Status "Open"
+        Id "PSP-9338"
+        Isparent "False"
+        priority 799
+        effort 4980.0min
+        complete 0
+        allocate mkhalid
+        depends root.PSP_9336,root.PSP_9330.PSP_9334.PSP_9337
+    }
+    task PSP_9339 "Bug Fixing for QA Cycle #2" {
+        Jira "PSP-9339"
+        Status "Open"
+        Id "PSP-9339"
+        Isparent "False"
+        priority 798
+        effort 1980.0min
+        complete 0
+        allocate ijaved
+        depends root.PSP_9338,root.PSP_9336,root.PSP_9330.PSP_9334.PSP_9337
+    }
+    task PSP_9336 "QA Cycle #1" {
+        Jira "PSP-9336"
+        Status "In Progress"
+        Id "PSP-9336"
+        Isparent "False"
+        priority 1000
+        effort 13740.0min
+        complete 0
+        allocate ijaved
+        depends root.PSP_9330.PSP_9333,root.PSP_9335
+    }
+    task PSP_9335 "Test Development" {
+        Jira "PSP-9335"
+        Status "In Progress"
+        Id "PSP-9335"
+        Isparent "False"
+        priority 999
+        effort 900.0min
+        complete 0
+        allocate ijaved
+    }
+}
+taskreport monthreporthtml "monthreporthtml" {
+formats html
+columns bsi, name, start, end, effort,resources, complete,Jira, Status, priority,monthly
+timeformat "%a %Y-%m-%d"
+loadunit hours
+hideresource @all }
+taskreport monthreport "monthreport" {
+formats csv
+columns Id, bsi, name, start, end, effort,resources, complete,Jira, Status, Isparent, priority, Isparent,monthly
+timeformat "%Y-%m-%d"
+loadunit hours
+hideresource @all }
+resourcereport resourcegraphhtm "resourcehtml" {
+formats html
+headline "Resource Allocation Graph"
+columns no, name, effort, monthly
+loadunit shortauto
+hidetask ~(isleaf() & isleaf_())
+sorttasks plan.start.up}

@@ -1,1 +1,1 @@
-{"image_name": "jira_tj3", "branch": "main", "docker_registry": "harbor.xcr.svcs01eu.prod.eu-central-1.kaas.sws.siemens.com/eps", "code_repository": "https://github.com/mahmad2504/jira_tj3.git", "commit": "f3a7c510f8b782d9c6279d707917d596aee09b28"}
+{"image_name": "jira_tj3", "branch": "main", "docker_registry": "harbor.xcr.svcs01eu.prod.eu-central-1.kaas.sws.siemens.com/eps", "code_repository": "https://github.com/mahmad2504/jira_tj3.git", "commit": "366682fb1c932e9b0c18a0886a68f84b481cecfe"}

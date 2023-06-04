@@ -28,12 +28,57 @@ class Report:
                 header['Summary']='Summary'
                 j=j+1
                 
+                #sheet.cell(i,j).value=row.data['summary']
+                header['Resource']='Resource'
+                resource_col=j
+                j=j+1
+                
+                #if row.data["key"]=='PSP-9265':
+                #    print(row.worklogs)
+                    
                 for dd in row.worklogs:
                     header[dd]=dd
-                    if row.worklogs[dd]!=0:
-                        sheet.cell(i,j).value=f"{row.worklogs[dd]} Hrs"
+                    if row.worklogs[dd]['total']!=0:
+                        sheet.cell(i,3).value='Total'
+                        sheet.cell(i,j).value=f"{row.worklogs[dd]['total']} Hrs"
+                        #if row.data["key"]=='PSP-9265':
+                        #    print(i)
+                        #for m in row.worklogs[dd]:
+                        #    if m=='total':
+                        #        pass
+                        #    else:
+                        #       sheet.cell(i,j).value=f"{row.worklogs[dd][m]} Hrs"
+                        #       i=i+1
+                        
                     j=j+1
                 i=i+1
+                row_rem=i
+                max=row_rem
+                j=3
+                for dd in row.worklogs:
+                    i=row_rem
+                    j=j+1
+                    #print(row.worklogs)
+                    for m in row.worklogs[dd]:
+                        if m=='total':
+                            #if row.data["key"]=='PSP-9265':
+                            #    print(i,"-->"+m)
+                            pass
+                        else:
+                            #if row.data["key"]=='PSP-9265':
+                            #    print(i,m)
+                            sheet.cell(i,3).value=m
+                            sheet.cell(i,j).value=f"{row.worklogs[dd][m]} Hrs"
+                            i=i+1    
+                            if i>max:
+                                max=i
+                            #if row.data["key"]=='PSP-9265':
+                            #    print(i,m)
+                i=max          
+                #if row.data["key"]=='PSP-9265':
+                #    wb.save(f'/projects/{str(tree.id)}/report.xlsx') 
+                #    exit()
+                
         j=1
         for field in header:
             sheet.cell(1,j).value=field

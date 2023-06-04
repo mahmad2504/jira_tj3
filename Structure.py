@@ -15,10 +15,10 @@ class Structure:
         self.jira=jira
         
     def Get(self,name):
-        
-        if isinstance(name, int):
-            url = self.jira.url+"/rest/structure/2.0/structure?id="+str(name)
-        else:
+        try:
+            int(name)
+            url = self.jira.url+"/rest/structure/2.0/structure/"+str(name)
+        except:
             url = self.jira.url+"/rest/structure/2.0/structure?name="+str(name)
         #print(url)
         response = requests.request(
@@ -29,15 +29,22 @@ class Structure:
             verify=False
         )
         response=json.loads(response.text)
-        #print(response)
-        if len(response["structures"])==0:
-            return None
+        
+        if "structures" in response:
+            if len(response["structures"])==0:
+                return None
+            else:
+                self.name=response["structures"][0]["name"]
+                self.id=response["structures"][0]["id"]
+                self.description=response["structures"][0]["description"]
+                self.isArchived=response["structures"][0]["isArchived"]
+                return response["structures"][0]
         else:
-            self.name=response["structures"][0]["name"]
-            self.id=response["structures"][0]["id"]
-            self.description=response["structures"][0]["description"]
-            self.isArchived=response["structures"][0]["isArchived"]
-            return response["structures"][0]
+            self.name=response["name"]
+            self.id=response["id"]
+            self.description=response["description"]
+            self.isArchived=response["isArchived"]
+            return response
             
     def Populate(self):
         

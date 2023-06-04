@@ -9,8 +9,10 @@ class Worklogs:
         min=''
         max=''
         worklogs={}
-        if os.path.isfile(f'projects/{str(tree.id)}/worklogs'):
-            file = open(f'projects/{str(tree.id)}/worklogs', 'r')
+        os.makedirs("/projects/"+str(tree.id),exist_ok=True)
+       
+        if os.path.isfile(f'/projects/{str(tree.id)}/worklogs'):
+            file = open(f'/projects/{str(tree.id)}/worklogs', 'r')
             worklogs=json.load(file)
 
       
@@ -37,8 +39,11 @@ class Worklogs:
                         worklogs[id].append({"id":id,"key":row.data['key'],"author":wlg['author']['name'],"timeSpentSeconds":wlg['timeSpentSeconds'],'started':wlg['started'].split("T")[0]})
             if row.data != None:
                 row.worklogs={}
+               
                 for worklog in worklogs[id]:
-                    if worklog['started'] != '':
+                    if worklog['started'] != '' and worklog['timeSpentSeconds']>0:
+                        author=worklog['author']
+                        #print(worklog['timeSpentSeconds'])
                         started=datetime.strptime(worklog['started'], '%Y-%m-%d')
                         
                         if(min==''):
@@ -52,12 +57,31 @@ class Worklogs:
                             
                         label=started.strftime("%Y-%m")
                         if label in row.worklogs:
-                            row.worklogs[label]=row.worklogs[label]+worklog['timeSpentSeconds']/(60*60)
+                            row.worklogs[label]['total']=row.worklogs[label]['total']+worklog['timeSpentSeconds']/(60*60)
+                            
+                            if author in row.worklogs[label]:
+                                row.worklogs[label][author]=row.worklogs[label][author]+worklog['timeSpentSeconds']/(60*60)
+                               
+                            else:
+                                 row.worklogs[label][author]=worklog['timeSpentSeconds']/(60*60)
                         else:
-                            row.worklogs[label]=worklog['timeSpentSeconds']/(60*60)
+                            row.worklogs[label]={'total':0}
+                            row.worklogs[label]['total']=worklog['timeSpentSeconds']/(60*60)
+                            
+                            if author in row.worklogs[label]:
+                                row.worklogs[label][author]=row.worklogs[label][author]+worklog['timeSpentSeconds']/(60*60)
+                                
+                            else:
+                                row.worklogs[label][author]=worklog['timeSpentSeconds']/(60*60)
+                           
+                
+                    #if row.data['key']=='HMIP-2428':
+                    #    print(row.worklogs)
                 
                 #row.data['worklogs']=worklogs[id]
-         
+            #if  row.data != None and row.data['key']=='HMIP-2428':
+            #    print(row.worklogs)
+                
         labels=[]
         labels.append(min.strftime("%Y-%m"))
         while min<max:
@@ -75,13 +99,14 @@ class Worklogs:
                         #print(row.worklogs[label])
                         pass
                     else:
-                        row.worklogs[label]=0
+                        row.worklogs[label]={'total':0}
                 row.worklogs = dict(sorted(row.worklogs.items()))
              
             
-        file = open(f'projects/{str(tree.id)}/worklogs', 'w+')
-        json.dump(worklogs, file)
+        file = open(f'/projects/{str(tree.id)}/worklogs', 'w+')
         
+        json.dump(worklogs, file)
+       
         self.worklogs=worklogs
     def Get(self):
         return self.worklogs

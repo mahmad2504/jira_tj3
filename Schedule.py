@@ -190,18 +190,18 @@ class Schedule:
               
     def GenerateProjectHeader(self,head):
         #print(head.itemdesc)
-        
-        
+        project_start='2023-06-01'
+        project_start='2023-08-01'
         if( hasattr(self,'project_start')):
             project_start=self.project_start
         else:
             print("Project Start Not defined")
-            exit()
+            
         if( hasattr(self,'project_end')):
             project_end=self.project_end
         else:
-            print("Project Start Not defined")
-            exit()
+            print("Project End Not defined")
+           
         #print(project_start,project_end)
         #project_duration = (datetime.strptime(project_end, '%Y-%m-%d') - datetime.strptime(project_start, '%Y-%m-%d')).total_seconds() / (60*60*24)
         project_duration=600
@@ -263,12 +263,14 @@ class Schedule:
         return blockedon.values()
         
     def GetDependencyTag(self,issue):
+        
         #print(issue["key"])
         dependencies=self.GetDependsOn(issue)
         #if len(dependencies)>0:
         #    print("Depends on")
         
         deli=''
+        deli2=''
         dependency_tag=''
         for dependency in dependencies:
             #print(dependency)
@@ -276,17 +278,24 @@ class Schedule:
             if dependency in self.allissues:
                 i=self.allissues[dependency]
                 parent_ids=self.GetParents(i);
+                basetag=''
                 for parent_id in parent_ids:
-                    dependency_tag=dependency_tag+deli+str(parent_id)
+                    #dependency_tag=dependency_tag+deli+str(parent_id)
+                    basetag=basetag+deli+str(parent_id)
                     deli='.'
-                    
-                dependency_tag=dependency_tag+deli+str(dependency)
+                
+                #print(basetag+deli+str(dependency))
+                dependency_tag=dependency_tag+deli2+basetag+deli+str(dependency)
                 dependency_tag=dependency_tag.replace("-","_")
-                #print(dependency_tag)
+                dependency_tag=dependency_tag
+                deli2=","
+                deli=''
+                #print("F  "+dependency_tag)
             else:
                 print(colored(f'dependency {dependency} for {issue["key"]}  not part of structure','red'))
             #print(dependency)
             #print(parent_ids)
+        #print(dependency_tag)
         return dependency_tag
                 
     def GetParents(self, issue):
@@ -409,7 +418,7 @@ class Schedule:
         self.tjp.append(f'resourcereport resourcegraphhtm "resourcehtml" {{')
         self.tjp.append(f'formats html')
         self.tjp.append(f'headline "Resource Allocation Graph"')
-        self.tjp.append(f'columns no, name, effort, weekly')
+        self.tjp.append(f'columns no, name, effort, monthly')
         self.tjp.append(f'loadunit shortauto')
         self.tjp.append(f'hidetask ~(isleaf() & isleaf_())')
         self.tjp.append(f'sorttasks plan.start.up}}')
